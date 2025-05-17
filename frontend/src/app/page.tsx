@@ -2,6 +2,15 @@
 
 import { useState } from "react";
 
+function githubToRawUrl(url: string): string | null {
+  const match = url.match(
+    /^https:\/\/github\.com\/([^\/]+)\/([^\/]+)\/blob\/([^\/]+)\/(.+)$/
+  );
+  if (!match) return null;
+  const [, user, repo, branch, path] = match;
+  return `https://raw.githubusercontent.com/${user}/${repo}/${branch}/${path}`;
+}
+
 export default function Home() {
   const [file, setFile] = useState("Hello.jsx");
   const [reactCode, setReactCode] = useState("");
@@ -13,9 +22,20 @@ export default function Home() {
   const fetchFile = async () => {
     try {
       setLoading(true);
-      const res = await fetch(`${API}/fetch?file=${encodeURIComponent(file)}`);
-      const data = await res.json();
-      setReactCode(data.code || "");
+      let code = "";
+      const rawUrl = githubToRawUrl(file.trim());
+      if (rawUrl) {
+        // Fetch from GitHub raw URL
+        const res = await fetch(rawUrl);
+        if (!res.ok) throw new Error("Failed to fetch from GitHub");
+        code = await res.text();
+      } else {
+        // Fallback to backend fetch for local files
+        const res = await fetch(`${API}/fetch?file=${encodeURIComponent(file)}`);
+        const data = await res.json();
+        code = data.code || "";
+      }
+      setReactCode(code);
       setNextCode("");
     } catch (error) {
       console.error("Error fetching file:", error);
