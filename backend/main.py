@@ -37,4 +37,23 @@ def migrate(snippet: CodeIn):
         temperature=0,
         messages=[{"role": "user", "content": prompt}]
     )
-    return {"convertedCode": resp.content[0].text.strip()}
+
+    full_text = resp.content[0].text.strip()
+
+    # extract only the content inside the first ``` block
+    if "```" in full_text:
+        parts = full_text.split("```")
+        if len(parts) >= 3:
+            raw_code_block = parts[1].strip()
+            code_lines = raw_code_block.splitlines()
+
+            # if first line is a language tag (eg tsx, jsx, etc), remove it
+            if code_lines and code_lines[0].strip() in {"tsx", "jsx", "js", "ts"}:
+                code_lines = code_lines[1:]
+
+            clean_code = "\n".join(code_lines).strip()
+            return {"convertedCode": clean_code}
+        else:
+            return {"convertedCode": full_text}
+    else:
+        return {"convertedCode": full_text}
