@@ -168,7 +168,7 @@ const animateReactTyping = async (text: string) => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
-        <div className="card p-6 flex flex-col glass">
+        <div className="card p-6 flex flex-col glass relative">
           <h2 className="text-lg font-semibold mb-3 flex items-center heading">
             <span className="inline-block w-3 h-3 rounded-full bg-[#8b5cf6] mr-2"></span>
             React Code
@@ -179,18 +179,19 @@ const animateReactTyping = async (text: string) => {
             onChange={(e) => setReactCode(e.target.value)}
             placeholder="Paste or edit your React code here..."
           />
-          {isTypingReact.current && (
-
-          <button
-              onClick={() => {
-                isTypingReact.current = false; 
-                setReactCode(fullReactCode);
-              }}
-              className="text-sm text-[#c4b5fd] mt-2 hover:underline"
-            >
-              Skip typing
-            </button>
-          )}
+          <div className="h-6 flex justify-center items-center">
+            {isTypingReact.current && (
+              <button
+                onClick={() => {
+                  isTypingReact.current = false; 
+                  setReactCode(fullReactCode);
+                }}
+                className="text-sm text-[#c4b5fd] mt-2 hover:underline"
+              >
+                Skip typing
+              </button>
+            )}
+          </div>
 
           <button 
             onClick={fetchFile} 
@@ -210,17 +211,19 @@ const animateReactTyping = async (text: string) => {
             readOnly
             placeholder="Your Next.js code will appear here..."
           />
-          {isTypingNext.current && (
-  <button
-    onClick={() => {
-      isTypingNext.current = false;
-      setNextCode(fullNextCode);
-    }}
-    className="text-sm text-[#c4b5fd] mt-2 hover:underline"
-  >
-    Skip typing
-  </button>
-)}
+          <div className="h-6 flex justify-center items-center">
+            {isTypingNext.current && (
+              <button
+                onClick={() => {
+                  isTypingNext.current = false; 
+                  setNextCode(fullNextCode);
+                }}
+                className="text-sm text-[#c4b5fd] mt-2 hover:underline"
+              >
+                Skip typing
+              </button>
+            )}
+          </div>
 
           <button 
             onClick={migrate} 
