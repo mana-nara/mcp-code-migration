@@ -16,6 +16,7 @@ export default function Home() {
   const [reactCode, setReactCode] = useState("");
   const [nextCode, setNextCode] = useState("");
   const [loading, setLoading] = useState(false);
+  
 
   const API = "http://localhost:8000";
 
@@ -35,7 +36,7 @@ export default function Home() {
         const data = await res.json();
         code = data.code || "";
       }
-      setReactCode(code);
+      await animateReactTyping(code);
       setNextCode("");
     } catch (error) {
       console.error("Error fetching file:", error);
@@ -43,6 +44,24 @@ export default function Home() {
       setLoading(false);
     }
   };
+
+const animateTyping = async (text: string) => {
+  setNextCode(""); // Clear previous content
+
+  for (let i = 0; i < text.length; i++) {
+    await new Promise((resolve) => setTimeout(resolve, 5)); // Lower is faster
+    setNextCode((prev) => prev + text[i]);
+  }
+};
+
+const animateReactTyping = async (text: string) => {
+  setReactCode(""); // Clear previous content
+
+  for (let i = 0; i < text.length; i++) {
+    await new Promise((resolve) => setTimeout(resolve, 5));
+    setReactCode((prev) => prev + text[i]);
+  }
+};
 
   const migrate = async () => {
     try {
@@ -53,7 +72,10 @@ export default function Home() {
         body: JSON.stringify({ code: reactCode }),
       });
       const data = await res.json();
-      setNextCode(data.convertedCode || "");
+      if (data.convertedCode) {
+        animateTyping(data.convertedCode);
+      }
+
     } catch (error) {
       console.error("Error migrating code:", error);
     } finally {
