@@ -59,10 +59,13 @@ export default function Home() {
             <a href="#" className="hover:text-[#c4b5fd] transition-colors">Pricing</a>
             <a href="#" className="hover:text-[#c4b5fd] transition-colors">Docs</a>
           </div>
-          <div className="flex space-x-3">
-            <button className="btn btn-outline px-3 py-1 text-sm">Log in</button>
-            <button className="btn btn-primary px-3 py-1 text-sm">Sign up</button>
-          </div>
+          <a href="#demo-section" className="btn btn-primary px-4 py-2 flex items-center font-medium hover:bg-[#a78bfa] transition-colors">
+            Try Now
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="ml-2">
+              <path d="M7 17L17 7"/>
+              <path d="M7 7h10v10"/>
+            </svg>
+          </a>
         </nav>
       </div>
 
@@ -78,12 +81,148 @@ export default function Home() {
           MigrateAI converts your React codebase to Next.js with 99.8% accuracy, saving hundreds of development hours.
         </p>
         <div className="flex flex-wrap gap-4 justify-center">
-          <button className="btn btn-primary px-6 py-3">Start migrating now</button>
+          <a href="#demo-section" className="btn btn-primary px-6 py-3 flex items-center">
+            Start migrating now
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="ml-2">
+              <path d="M7 17L17 7"/>
+              <path d="M7 7h10v10"/>
+            </svg>
+          </a>
           <button className="btn btn-outline px-6 py-3">Book a demo</button>
         </div>
       </header>
 
-      <div className="card p-6 mb-8 glass">
+      <section className="mb-20">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl font-bold mb-4 heading">Why Should You Choose MigrateAI</h2>
+          <p className="text-xl text-[#f5f3ff]/70 max-w-3xl mx-auto">
+            Industry-leading enterprises rely on our platform to accelerate their migration journey
+          </p>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+          <div className="card p-6 glass">
+            <div className="mb-4 text-[#8b5cf6]">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                <path d="M2 17l10 5 10-5"></path>
+                <path d="M2 12l10 5 10-5"></path>
+              </svg>
+            </div>
+            <h3 className="text-xl font-bold mb-2 heading">AI-Powered Precision</h3>
+            <p className="text-[#f5f3ff]/70">
+              Our advanced AI models have been trained on millions of lines of code to deliver 99.8% accuracy in code transformations, ensuring a smooth transition to Next.js.
+            </p>
+          </div>
+          
+          <div className="card p-6 glass">
+            <div className="mb-4 text-[#d946ef]">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+            </div>
+            <h3 className="text-xl font-bold mb-2 heading">Save Weeks of Development</h3>
+            <p className="text-[#f5f3ff]/70">
+              What takes teams weeks to migrate manually can be done in minutes. Our customers report saving an average of 200+ development hours per project.
+            </p>
+          </div>
+          
+          <div className="card p-6 glass">
+            <div className="mb-4 text-[#8b5cf6]">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+              </svg>
+            </div>
+            <h3 className="text-xl font-bold mb-2 heading">Enterprise Ready</h3>
+            <p className="text-[#f5f3ff]/70">
+              SOC 2 compliant with secure deployment options. Keep your code secure with on-premises options and no data retention.
+            </p>
+          </div>
+        </div>
+        
+        <div className="border border-[rgba(255,255,255,0.1)] rounded-xl p-8 mb-16 glass">
+          <div className="flex flex-col md:flex-row items-center">
+            <div className="md:w-1/2 mb-8 md:mb-0 md:pr-10">
+              <h3 className="text-2xl font-bold mb-4 heading">Seamless Migration Process</h3>
+              <p className="text-[#f5f3ff]/70 mb-6">
+                Our platform handles the complex transformations required when moving from React to Next.js, including:
+              </p>
+              <ul className="space-y-3">
+                <li className="flex items-start">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[#d946ef] mr-2 flex-shrink-0">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span>Converting React Router to Next.js routing system</span>
+                </li>
+                <li className="flex items-start">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[#d946ef] mr-2 flex-shrink-0">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span>Restructuring components for the App Router</span>
+                </li>
+                <li className="flex items-start">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[#d946ef] mr-2 flex-shrink-0">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span>Adapting data fetching strategies</span>
+                </li>
+                <li className="flex items-start">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[#d946ef] mr-2 flex-shrink-0">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <span>Implementing server components and client boundaries</span>
+                </li>
+              </ul>
+            </div>
+            <div className="md:w-1/2 glass rounded-lg overflow-hidden">
+              <div className="bg-[rgba(10,10,20,0.5)] p-3 border-b border-[rgba(255,255,255,0.1)]">
+                <div className="flex space-x-2">
+                  <div className="w-3 h-3 rounded-full bg-[#ef4444]"></div>
+                  <div className="w-3 h-3 rounded-full bg-[#f59e0b]"></div>
+                  <div className="w-3 h-3 rounded-full bg-[#10b981]"></div>
+                </div>
+              </div>
+              <div className="p-4 bg-[rgba(20,20,30,0.5)] text-sm font-mono text-[#f5f3ff]/80 overflow-x-auto">
+                <div className="text-[#8b5cf6]">// React Router</div>
+                <div>{`import { BrowserRouter, Routes, Route } from 'react-router-dom';`}</div>
+                <div className="mt-2">{`function App() {`}</div>
+                <div className="ml-4">{`return (`}</div>
+                <div className="ml-8">{`<BrowserRouter>`}</div>
+                <div className="ml-12">{`<Routes>`}</div>
+                <div className="ml-16">{`<Route path="/" element={<Home />} />`}</div>
+                <div className="ml-12">{`</Routes>`}</div>
+                <div className="ml-8">{`</BrowserRouter>`}</div>
+                <div className="ml-4">{`);`}</div>
+                <div>{`}`}</div>
+                <div className="mt-6 text-[#d946ef]">// Next.js App Router</div>
+                <div>{`// app/page.jsx`}</div>
+                <div className="mt-2">{`export default function Home() {`}</div>
+                <div className="ml-4">{`return <YourHomePage />;`}</div>
+                <div>{`}`}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="text-center mb-10">
+          <div className="rounded-xl bg-gradient-to-r from-[#8b5cf6]/20 to-[#d946ef]/20 p-10 glass">
+            <h3 className="text-2xl font-bold mb-4 heading">Ready to experience the power of MigrateAI?</h3>
+            <p className="text-xl text-[#f5f3ff]/70 mb-6 max-w-2xl mx-auto">
+              Try our demo below with your own React code or use our examples to see the magic happen in seconds.
+            </p>
+            <a href="#demo-section" className="btn btn-primary px-6 py-3 inline-flex items-center">
+              Try the demo
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="ml-2">
+                <path d="M7 17L17 7"/>
+                <path d="M7 7h10v10"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <div className="card p-6 mb-8 glass" id="demo-section">
         <div className="flex flex-col md:flex-row gap-4 items-end">
           <div className="flex-grow">
             <label className="block text-sm font-medium mb-2 text-[#c4b5fd]" htmlFor="file-input">
