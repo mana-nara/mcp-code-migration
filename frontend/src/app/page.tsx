@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRef } from "react";
 
 function githubToRawUrl(url: string): string | null {
   const match = url.match(
@@ -16,6 +17,16 @@ export default function Home() {
   const [reactCode, setReactCode] = useState("");
   const [nextCode, setNextCode] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const [fullReactCode, setFullReactCode] = useState("");
+  const [fullNextCode, setFullNextCode] = useState("");
+
+
+const isTypingReact = useRef(false);
+const isTypingNext = useRef(false);
+
+
+
   
 
   const API = "http://localhost:8000";
@@ -46,22 +57,36 @@ export default function Home() {
   };
 
 const animateTyping = async (text: string) => {
-  setNextCode(""); // Clear previous content
+  isTypingNext.current = true;
+  setNextCode("");
+  setFullNextCode(text);
 
   for (let i = 0; i < text.length; i++) {
-    await new Promise((resolve) => setTimeout(resolve, 5)); // Lower is faster
+    if (!isTypingNext.current) break;
+    await new Promise((resolve) => setTimeout(resolve, 5));
     setNextCode((prev) => prev + text[i]);
   }
+
+  isTypingNext.current = false;
 };
 
+
+
 const animateReactTyping = async (text: string) => {
-  setReactCode(""); // Clear previous content
+  isTypingReact.current = true;
+  setReactCode("");
+  setFullReactCode(text);
 
   for (let i = 0; i < text.length; i++) {
+    if (!isTypingReact.current) break;
     await new Promise((resolve) => setTimeout(resolve, 5));
     setReactCode((prev) => prev + text[i]);
   }
+
+  isTypingReact.current = false;
 };
+
+
 
   const migrate = async () => {
     try {
@@ -154,6 +179,19 @@ const animateReactTyping = async (text: string) => {
             onChange={(e) => setReactCode(e.target.value)}
             placeholder="Paste or edit your React code here..."
           />
+          {isTypingReact.current && (
+
+          <button
+              onClick={() => {
+                isTypingReact.current = false; 
+                setReactCode(fullReactCode);
+              }}
+              className="text-sm text-[#c4b5fd] mt-2 hover:underline"
+            >
+              Skip typing
+            </button>
+          )}
+
           <button 
             onClick={fetchFile} 
             disabled={loading} 
@@ -172,6 +210,18 @@ const animateReactTyping = async (text: string) => {
             readOnly
             placeholder="Your Next.js code will appear here..."
           />
+          {isTypingNext.current && (
+  <button
+    onClick={() => {
+      isTypingNext.current = false;
+      setNextCode(fullNextCode);
+    }}
+    className="text-sm text-[#c4b5fd] mt-2 hover:underline"
+  >
+    Skip typing
+  </button>
+)}
+
           <button 
             onClick={migrate} 
             disabled={loading || !reactCode} 
