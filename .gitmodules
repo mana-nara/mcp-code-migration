@@ -1,0 +1,3 @@
+[submodule "react-demo"]
+	path = react-demo
+	url = https://github.com/mana-nara/react-demo.git
