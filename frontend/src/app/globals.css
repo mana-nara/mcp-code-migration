@@ -37,10 +37,12 @@
 }
 
 body {
-  background: linear-gradient(135deg, #0a0a14, #1a1025);
+  background: linear-gradient(135deg, #0a0a14 0%, #150d29 50%, #1a1030 100%);
   color: var(--foreground);
   font-family: var(--font-mono);
   min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
 }
 
 h1, h2, h3, h4, h5, h6, .heading {
@@ -179,4 +181,11 @@ input:focus {
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+/* Add utility classes for gradients */
+@layer utilities {
+  .bg-gradient-radial {
+    background-image: radial-gradient(var(--tw-gradient-stops));
+  }
 }
