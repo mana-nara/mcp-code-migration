@@ -1,28 +1,99 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
+import Link from "next/link";
+
+function githubToRawUrl(url: string): string | null {
+  const match = url.match(
+    /^https:\/\/github\.com\/([^\/]+)\/([^\/]+)\/blob\/([^\/]+)\/(.+)$/
+  );
+  if (!match) return null;
+  const [, user, repo, branch, path] = match;
+  return `https://raw.githubusercontent.com/${user}/${repo}/${branch}/${path}`;
+}
+
+function isGithubRepoUrl(url: string): boolean {
+  return /^https:\/\/github\.com\/[^\/]+\/[^\/]+\/blob\//.test(url.trim());
+}
 
 export default function Home() {
   const [file, setFile] = useState("Hello.jsx");
   const [reactCode, setReactCode] = useState("");
   const [nextCode, setNextCode] = useState("");
   const [loading, setLoading] = useState(false);
+  const [downloadUrl, setDownloadUrl] = useState("");
+
+  const [fullReactCode, setFullReactCode] = useState("");
+  const [fullNextCode, setFullNextCode] = useState("");
+
+
+const isTypingReact = useRef(false);
+const isTypingNext = useRef(false);
+
+
+
+  
 
   const API = "http://localhost:8000";
 
   const fetchFile = async () => {
+    setDownloadUrl("");
+    setReactCode("");
+    setNextCode("");
     try {
       setLoading(true);
-      const res = await fetch(`${API}/fetch?file=${encodeURIComponent(file)}`);
-      const data = await res.json();
-      setReactCode(data.code || "");
+      const trimmed = file.trim();
+      const rawUrl = githubToRawUrl(trimmed);
+      let code = "";
+      if (rawUrl) {
+        const res = await fetch(rawUrl);
+        if (!res.ok) throw new Error("Failed to fetch from GitHub");
+        code = await res.text();
+      } else {
+        const res = await fetch(`${API}/fetch?file=${encodeURIComponent(file)}`);
+        const data = await res.json();
+        code = data.code || "";
+      }
+      await animateReactTyping(code);
       setNextCode("");
     } catch (error) {
-      console.error("Error fetching file:", error);
+      setReactCode("Error: " + error);
     } finally {
       setLoading(false);
     }
   };
+
+const animateTyping = async (text: string) => {
+  isTypingNext.current = true;
+  setNextCode("");
+  setFullNextCode(text);
+
+  for (let i = 0; i < text.length; i++) {
+    if (!isTypingNext.current) break;
+    await new Promise((resolve) => setTimeout(resolve, 5));
+    setNextCode((prev) => prev + text[i]);
+  }
+
+  isTypingNext.current = false;
+};
+
+
+
+const animateReactTyping = async (text: string) => {
+  isTypingReact.current = true;
+  setReactCode("");
+  setFullReactCode(text);
+
+  for (let i = 0; i < text.length; i++) {
+    if (!isTypingReact.current) break;
+    await new Promise((resolve) => setTimeout(resolve, 5));
+    setReactCode((prev) => prev + text[i]);
+  }
+
+  isTypingReact.current = false;
+};
+
+
 
   const migrate = async () => {
     try {
@@ -33,9 +104,12 @@ export default function Home() {
         body: JSON.stringify({ code: reactCode }),
       });
       const data = await res.json();
-      setNextCode(data.convertedCode || "");
+      if (data.convertedCode) {
+        animateTyping(data.convertedCode);
+      }
+
     } catch (error) {
-      console.error("Error migrating code:", error);
+      setNextCode("Error: " + error);
     } finally {
       setLoading(false);
     }
@@ -243,13 +317,20 @@ export default function Home() {
             <p className="text-xl text-[#f5f3ff]/70 mb-6 max-w-2xl mx-auto">
               Experience how miGrate makes React to Next.js transformations easier than grating cheese.
             </p>
-            <a href="#demo-section" className="btn btn-primary px-6 py-3 inline-flex items-center">
-              Get Started
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="ml-2">
-                <path d="M7 17L17 7"/>
-                <path d="M7 7h10v10"/>
-              </svg>
-            </a>
+            <div className="flex flex-wrap gap-4 justify-center">
+              <a href="#demo-section" className="btn btn-primary px-6 py-3 inline-flex items-center">
+                Get Started
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="ml-2">
+                  <path d="M7 17L17 7"/>
+                  <path d="M7 7h10v10"/>
+                </svg>
+              </a>
+              <Link href="/repo-migrate">
+                <button className="btn btn-outline px-6 py-3 text-lg">
+                  Migrate a Full GitHub Repository →
+                </button>
+              </Link>
+            </div>
           </div>
         </div>
       </section>
@@ -261,14 +342,14 @@ export default function Home() {
           <div className="flex flex-col md:flex-row gap-4 items-end">
             <div className="flex-grow">
               <label className="block text-sm font-medium mb-2 text-[#c4b5fd]" htmlFor="file-input">
-                Paste a file path or URL
+                Paste a file path or GitHub file URL
               </label>
               <input
                 id="file-input"
                 value={file}
                 onChange={(e) => setFile(e.target.value)}
                 className="w-full px-4 py-2 rounded-full border border-[rgba(255,255,255,0.1)] bg-[rgba(10,10,20,0.3)] focus:border-[#8b5cf6] outline-none transition"
-                placeholder="Enter file path (e.g. components/Hello.jsx)"
+                placeholder="Enter file path (e.g. components/Hello.jsx) or GitHub file URL"
               />
             </div>
           </div>
@@ -282,12 +363,26 @@ export default function Home() {
             <span className="inline-block w-3 h-3 rounded-full bg-[#8b5cf6] mr-2"></span>
             React Code
           </h2>
-          <textarea 
-            className="code-area w-full flex-grow p-4 resize-none outline-none min-h-[300px]" 
-            value={reactCode} 
+          <textarea
+            className="code-area w-full flex-grow p-4 resize-none outline-none min-h-[300px]"
+            value={reactCode}
             onChange={(e) => setReactCode(e.target.value)}
             placeholder="Paste or edit your React code here..."
           />
+          <div className="h-6 flex justify-center items-center">
+            {isTypingReact.current && (
+              <button
+                onClick={() => {
+                  isTypingReact.current = false; 
+                  setReactCode(fullReactCode);
+                }}
+                className="text-sm text-[#c4b5fd] mt-2 hover:underline"
+              >
+                Skip typing
+              </button>
+            )}
+          </div>
+
           <button 
             onClick={fetchFile} 
             disabled={loading} 
@@ -300,12 +395,26 @@ export default function Home() {
             <span className="inline-block w-3 h-3 rounded-full bg-[#d946ef] mr-2"></span>
             Next.js Code
           </h2>
-          <textarea 
-            className="code-area w-full flex-grow p-4 resize-none outline-none min-h-[300px]" 
+          <textarea
+            className="code-area w-full flex-grow p-4 resize-none outline-none min-h-[300px]"
             value={nextCode}
             readOnly
             placeholder="Your Next.js code will appear here..."
           />
+          <div className="h-6 flex justify-center items-center">
+            {isTypingNext.current && (
+              <button
+                onClick={() => {
+                  isTypingNext.current = false; 
+                  setNextCode(fullNextCode);
+                }}
+                className="text-sm text-[#c4b5fd] mt-2 hover:underline"
+              >
+                Skip typing
+              </button>
+            )}
+          </div>
+
           <button 
             onClick={migrate} 
             disabled={loading || !reactCode} 
