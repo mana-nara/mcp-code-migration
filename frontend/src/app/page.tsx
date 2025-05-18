@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRef } from "react";
 
 function githubToRawUrl(url: string): string | null {
   const match = url.match(
@@ -16,6 +17,17 @@ export default function Home() {
   const [reactCode, setReactCode] = useState("");
   const [nextCode, setNextCode] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const [fullReactCode, setFullReactCode] = useState("");
+  const [fullNextCode, setFullNextCode] = useState("");
+
+
+const isTypingReact = useRef(false);
+const isTypingNext = useRef(false);
+
+
+
+  
 
   const API = "http://localhost:8000";
 
@@ -35,7 +47,7 @@ export default function Home() {
         const data = await res.json();
         code = data.code || "";
       }
-      setReactCode(code);
+      await animateReactTyping(code);
       setNextCode("");
     } catch (error) {
       console.error("Error fetching file:", error);
@@ -43,6 +55,38 @@ export default function Home() {
       setLoading(false);
     }
   };
+
+const animateTyping = async (text: string) => {
+  isTypingNext.current = true;
+  setNextCode("");
+  setFullNextCode(text);
+
+  for (let i = 0; i < text.length; i++) {
+    if (!isTypingNext.current) break;
+    await new Promise((resolve) => setTimeout(resolve, 5));
+    setNextCode((prev) => prev + text[i]);
+  }
+
+  isTypingNext.current = false;
+};
+
+
+
+const animateReactTyping = async (text: string) => {
+  isTypingReact.current = true;
+  setReactCode("");
+  setFullReactCode(text);
+
+  for (let i = 0; i < text.length; i++) {
+    if (!isTypingReact.current) break;
+    await new Promise((resolve) => setTimeout(resolve, 5));
+    setReactCode((prev) => prev + text[i]);
+  }
+
+  isTypingReact.current = false;
+};
+
+
 
   const migrate = async () => {
     try {
@@ -53,7 +97,10 @@ export default function Home() {
         body: JSON.stringify({ code: reactCode }),
       });
       const data = await res.json();
-      setNextCode(data.convertedCode || "");
+      if (data.convertedCode) {
+        animateTyping(data.convertedCode);
+      }
+
     } catch (error) {
       console.error("Error migrating code:", error);
     } finally {
@@ -121,7 +168,7 @@ export default function Home() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
-        <div className="card p-6 flex flex-col glass">
+        <div className="card p-6 flex flex-col glass relative">
           <h2 className="text-lg font-semibold mb-3 flex items-center heading">
             <span className="inline-block w-3 h-3 rounded-full bg-[#8b5cf6] mr-2"></span>
             React Code
@@ -132,6 +179,20 @@ export default function Home() {
             onChange={(e) => setReactCode(e.target.value)}
             placeholder="Paste or edit your React code here..."
           />
+          <div className="h-6 flex justify-center items-center">
+            {isTypingReact.current && (
+              <button
+                onClick={() => {
+                  isTypingReact.current = false; 
+                  setReactCode(fullReactCode);
+                }}
+                className="text-sm text-[#c4b5fd] mt-2 hover:underline"
+              >
+                Skip typing
+              </button>
+            )}
+          </div>
+
           <button 
             onClick={fetchFile} 
             disabled={loading} 
@@ -150,6 +211,20 @@ export default function Home() {
             readOnly
             placeholder="Your Next.js code will appear here..."
           />
+          <div className="h-6 flex justify-center items-center">
+            {isTypingNext.current && (
+              <button
+                onClick={() => {
+                  isTypingNext.current = false; 
+                  setNextCode(fullNextCode);
+                }}
+                className="text-sm text-[#c4b5fd] mt-2 hover:underline"
+              >
+                Skip typing
+              </button>
+            )}
+          </div>
+
           <button 
             onClick={migrate} 
             disabled={loading || !reactCode} 
