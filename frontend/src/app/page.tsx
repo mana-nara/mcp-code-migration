@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 
 function githubToRawUrl(url: string): string | null {
   const match = url.match(
@@ -11,26 +12,33 @@ function githubToRawUrl(url: string): string | null {
   return `https://raw.githubusercontent.com/${user}/${repo}/${branch}/${path}`;
 }
 
+function isGithubRepoUrl(url: string): boolean {
+  return /^https:\/\/github\.com\/[^\/]+\/[^\/]+\/blob\//.test(url.trim());
+}
+
 export default function Home() {
   const [file, setFile] = useState("Hello.jsx");
   const [reactCode, setReactCode] = useState("");
   const [nextCode, setNextCode] = useState("");
   const [loading, setLoading] = useState(false);
+  const [downloadUrl, setDownloadUrl] = useState("");
 
   const API = "http://localhost:8000";
 
   const fetchFile = async () => {
+    setDownloadUrl("");
+    setReactCode("");
+    setNextCode("");
     try {
       setLoading(true);
+      const trimmed = file.trim();
+      const rawUrl = githubToRawUrl(trimmed);
       let code = "";
-      const rawUrl = githubToRawUrl(file.trim());
       if (rawUrl) {
-        // Fetch from GitHub raw URL
         const res = await fetch(rawUrl);
         if (!res.ok) throw new Error("Failed to fetch from GitHub");
         code = await res.text();
       } else {
-        // Fallback to backend fetch for local files
         const res = await fetch(`${API}/fetch?file=${encodeURIComponent(file)}`);
         const data = await res.json();
         code = data.code || "";
@@ -38,7 +46,7 @@ export default function Home() {
       setReactCode(code);
       setNextCode("");
     } catch (error) {
-      console.error("Error fetching file:", error);
+      setReactCode("Error: " + error);
     } finally {
       setLoading(false);
     }
@@ -55,7 +63,7 @@ export default function Home() {
       const data = await res.json();
       setNextCode(data.convertedCode || "");
     } catch (error) {
-      console.error("Error migrating code:", error);
+      setNextCode("Error: " + error);
     } finally {
       setLoading(false);
     }
@@ -103,18 +111,26 @@ export default function Home() {
         </div>
       </header>
 
+      <div className="flex justify-center mt-8 mb-4">
+        <Link href="/repo-migrate">
+          <button className="btn btn-outline px-6 py-2 text-lg">
+            Migrate a Full GitHub Repository →
+          </button>
+        </Link>
+      </div>
+
       <div className="card p-6 mb-8 glass">
         <div className="flex flex-col md:flex-row gap-4 items-end">
           <div className="flex-grow">
             <label className="block text-sm font-medium mb-2 text-[#c4b5fd]" htmlFor="file-input">
-              Paste a file path or URL
+              Paste a file path or GitHub file URL
             </label>
             <input
               id="file-input"
               value={file}
               onChange={(e) => setFile(e.target.value)}
               className="w-full px-4 py-2 rounded-full border border-[rgba(255,255,255,0.1)] bg-[rgba(10,10,20,0.3)] focus:border-[#8b5cf6] outline-none transition"
-              placeholder="Enter file path (e.g. components/Hello.jsx)"
+              placeholder="Enter file path (e.g. components/Hello.jsx) or GitHub file URL"
             />
           </div>
         </div>
@@ -126,16 +142,17 @@ export default function Home() {
             <span className="inline-block w-3 h-3 rounded-full bg-[#8b5cf6] mr-2"></span>
             React Code
           </h2>
-          <textarea 
-            className="code-area w-full flex-grow p-4 resize-none outline-none min-h-[300px]" 
-            value={reactCode} 
+          <textarea
+            className="code-area w-full flex-grow p-4 resize-none outline-none min-h-[300px]"
+            value={reactCode}
             onChange={(e) => setReactCode(e.target.value)}
             placeholder="Paste or edit your React code here..."
           />
-          <button 
-            onClick={fetchFile} 
-            disabled={loading} 
-            className="btn btn-primary px-4 py-2 mt-4 w-full">
+          <button
+            onClick={fetchFile}
+            disabled={loading}
+            className="btn btn-primary px-4 py-2 mt-4 w-full"
+          >
             {loading ? "Loading..." : "Fetch Code"}
           </button>
         </div>
@@ -144,16 +161,17 @@ export default function Home() {
             <span className="inline-block w-3 h-3 rounded-full bg-[#d946ef] mr-2"></span>
             Next.js Code
           </h2>
-          <textarea 
-            className="code-area w-full flex-grow p-4 resize-none outline-none min-h-[300px]" 
+          <textarea
+            className="code-area w-full flex-grow p-4 resize-none outline-none min-h-[300px]"
             value={nextCode}
             readOnly
             placeholder="Your Next.js code will appear here..."
           />
-          <button 
-            onClick={migrate} 
-            disabled={loading || !reactCode} 
-            className={`btn w-full px-4 py-2 mt-4 ${reactCode ? "btn-primary" : "btn-outline opacity-50 cursor-not-allowed"}`}>
+          <button
+            onClick={migrate}
+            disabled={loading || !reactCode}
+            className={`btn w-full px-4 py-2 mt-4 ${reactCode ? "btn-primary" : "btn-outline opacity-50 cursor-not-allowed"}`}
+          >
             {loading ? "Processing..." : "Migrate to Next.js"}
           </button>
         </div>
