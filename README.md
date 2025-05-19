@@ -40,6 +40,8 @@ export CLAUDE_API_KEY="sk-ant-..."
 uvicorn main:app --reload
 ```
 - The API will be available at [http://localhost:8000](http://localhost:8000)
+- API documentation and interactive testing interface is available at [http://localhost:8000/docs](http://localhost:8000/docs)
+  - Use this to verify if the backend is working correctly and to test API endpoints directly
 
 ---
 
@@ -62,4 +64,3 @@ npm run dev
 4. Click **Migrate** to convert it to a Next.js 13+ component with TypeScript.
 
 ---
-
